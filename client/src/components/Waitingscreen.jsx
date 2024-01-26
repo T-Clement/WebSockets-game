@@ -7,30 +7,32 @@ import { socket } from '../socket'
 
 function Waitingscreen({ username }) {
   useEffect(() => {
-    // websocket connection
-    // socket.on("connect", () => {
-    //   console.log(`${username} is connected`);
-    // });
-
-    // socket.on("message", (data) => {
-    //   console.log("Message from server: ", data)
-    // })
-
-    // console.log("Dans le useEffect")
+    
     socket.connect();
     socket.on("connect", () => {
       console.log("Connected to the WebSocket server");
     });
+    
     socket.emit("bonjour", username);
     
 
+    socket.on("broadcast", (data) => {
+      console.log(data);
+    });
+
     socket.on("hello", (data) => {
       console.log("Message from server : ", data)
-    })
+    });
 
     // socket.on("hello", (data) => {
     //   console.log("Message from server:", data);
     // });
+
+
+    socket.on("getActiveUsers", (users) => {
+      console.log("Active users ", users);
+    });
+
 
 
 
@@ -50,7 +52,8 @@ function Waitingscreen({ username }) {
         <h1>Hello, { username  }</h1>
         <p>Ready to play ?</p>
         <p>Users ready to play :</p>
-        <ul id="usersList"></ul>
+        <ul id="usersList">
+        </ul>
     </div>
   )
 }

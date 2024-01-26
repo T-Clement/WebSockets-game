@@ -9,6 +9,9 @@ const io = new Server(httpServer, {
 });
 
 
+const activeUsers = [];
+
+
 io.on("connection", (socket) => {
   console.log("New user connected");
   
@@ -16,16 +19,30 @@ io.on("connection", (socket) => {
     console.log(`${username} dit bonjour au serveur WebScoket`);
     socket.emit("hello", `hello ${username} !`);
     console.log("Le serveur répond au bonjour de " + username)
+
+
+    // store in socket the username
+    socket.username = username;
+
+    // store user in active users list
+    activeUsers[socket.id] = username;
+
+    io.emit("getActiveUsers", Object.values(activeUsers));
+
   })
 
 
 
-  socket.on("disconnect", (username) => {
-    console.log(`${username} disconnect from the page`);
+  socket.emit("broadcast", "Oui ça crie pour tout le monde");
+
+  socket.on("disconnect", () => {
+    console.log(`${socket.username} disconnect from the page`);
   })
 
 });
 
+
+// io.emit("bor", )
 
 
 const port = 4000;
