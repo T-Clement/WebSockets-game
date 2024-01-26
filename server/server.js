@@ -35,8 +35,10 @@ io.on("connection", (socket) => {
 
   socket.emit("broadcast", "Oui ça crie pour tout le monde");
 
-  socket.on("disconnect", () => {
+  socket.on("disconnection", () => {
     console.log(`${socket.username} disconnect from the page`);
+    delete activeUsers[socket.id];
+    io.emit("getActiveUsers", Object.values(activeUsers));
   })
 
 });
