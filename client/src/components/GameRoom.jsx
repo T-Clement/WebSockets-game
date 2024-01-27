@@ -14,15 +14,19 @@ function GameRoom({ username, setUsername }) {
       // console.log("Connected to the WebSocket server with id : " + socket.id);
     });
     
+    // send to server the identity of user
+    // need to change to registerNewUser
     socket.emit("bonjour", username);
     
 
-    
+    // update usersActive after server send the list of users connected
     socket.on("getActiveUsers", (users) => {
       setUsersActive(users);
 
     });
 
+    // launch round by generating a new render of component with the update of isGameStarted state
+    // and set in Component the targeted number for this round
     socket.on("launch_round", (data) => {
       setRoundRandomNumber(data);
       setIsGameStarted(true);
