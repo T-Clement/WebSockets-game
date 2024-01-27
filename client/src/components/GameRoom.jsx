@@ -4,6 +4,7 @@ import { socket } from '../socket'
 
 function GameRoom({ username, setUsername }) {
   const [usersActive, setUsersActive] = useState([]);
+  const [isGameStarted, setIsGameStarted] = useState(false);
   useEffect(() => {
     
     socket.connect();
@@ -51,21 +52,44 @@ function GameRoom({ username, setUsername }) {
       setUsername(null);
     }
 
-  }, [username]);
+  }, [username]); // end of useEffect
+
+  const handleClick = () => {
+    console.log("C'est cliqué");
+    setIsGameStarted(true);
+  };
+
+
 
   console.log(usersActive);
+  console.log(Object.values(usersActive));
+  console.log(Object.values(usersActive).length);
 
-  return (
+   return !isGameStarted ? (
     <div>
         <h1>Hello, { username  }</h1>
         <p>Ready to play ?</p>
-        <p>Users ready to play : {Object.values(usersActive).length}</p>
+        <p>Users ready to play (2 players minimum) : {Object.values(usersActive).length}</p>
         <ul id="usersList">
           {Object.values(usersActive).map((user) => (
             <li key={user.id}>{user.username} {user.id === socket.id ? "(You)" : ""}</li>
           ))}
         </ul>
+
+        <button 
+          onClick = {handleClick} 
+         disabled = {Object.values(usersActive).length < 2}
+
+        >
+          Lancer la partie
+        </button>
+
     </div>
+  ) 
+  :  (
+    <>
+      <h1>Lancement de la partie</h1>
+    </>
   )
 }
 

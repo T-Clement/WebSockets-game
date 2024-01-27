@@ -11,7 +11,8 @@ const io = new Server(httpServer, {
 
 // TODOS :
 // choose a room to play to display 
-// only users related to this room
+  // only users related to this room
+// change the socket.id system to something send by client ?
 
 const activeUsers = {};
 
