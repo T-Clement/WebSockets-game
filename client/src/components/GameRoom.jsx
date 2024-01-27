@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { socket } from '../socket'
+import Timer from './Timer';
+import TableScore from './TableScore';
+
+
+
+
 
 
 function GameRoom({ username, setUsername }) {
   const [usersActive, setUsersActive] = useState([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [roundRandomNumber, setRoundRandomNumber] = useState(null);
+  const [scores, setScores] = useState(null);
+
 
   useEffect(() => {
     
@@ -56,13 +64,20 @@ function GameRoom({ username, setUsername }) {
 
   }, [username]); // end of useEffect
 
+  
+  const sendUserNumberToServer = (data) => {
+    socket.emit("sendUserNumberToServer", data)
+  }
+
   const handleClick = () => {
     // console.log(`${username} a lancé la partie`);
     // launchGame(username);
     socket.emit("launch_game", username); // send id of user instead of user name
     // console.log("Après l'envoi de la partie");
+
   };
 
+  
 
 
   // console.log(usersActive);
@@ -94,6 +109,12 @@ function GameRoom({ username, setUsername }) {
     <>
       <h1>Lancement de la partie</h1>
       <p>Targeted Number : { roundRandomNumber }</p>
+
+
+      <Timer sendUserNumberToServer = { sendUserNumberToServer } userId = { socket.id } />
+      
+      {scores ? <TableScore scores = { scores } /> : "" }
+
     </>
   )
 }

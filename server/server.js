@@ -16,7 +16,7 @@ const io = new Server(httpServer, {
 // change the socket.id system to something send by client ?
 
 const activeUsers = {};
-
+const scores = {};
 
 io.on("connection", (socket) => {
   // log in server consoles
@@ -53,6 +53,18 @@ io.on("connection", (socket) => {
 
     // broadcast to all users the random number and launch round
     io.emit("launch_round", randomRoundNumber);
+  });
+
+
+
+  socket.on("sendUserNumberToServer", (data) => {
+    console.log(activeUsers[data["userId"]] + " : " + data["chronoValue"]);
+    scores[data["userId"]] = data["chronoValue"];
+    console.log(scores);
+
+    if(Object.values(scores). length === Object.values(activeUsers).length) {
+      
+    }
   });
 
 
