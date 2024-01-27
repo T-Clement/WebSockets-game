@@ -1,6 +1,7 @@
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { uuid } = require("uuid");
+const { randomIntFromInterval } = require('./utilities');
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -25,10 +26,6 @@ io.on("connection", (socket) => {
     socket.emit("hello", `hello ${username} !`);
     console.log("Le serveur répond au bonjour de " + username)
 
-
-    // store in socket the username
-    // socket.username = username;
-
     // store user in active users list
     // socket
     activeUsers[socket.id] = { 
@@ -39,12 +36,18 @@ io.on("connection", (socket) => {
     console.log(activeUsers);
     io.emit("getActiveUsers", activeUsers);
 
+
+    
   })
 
+  socket.on("launch_game", (username) => {
+    console.log(`${username} launched the game`);
+    let randomRoundNumber = randomIntFromInterval(0, 15);
+    console.log("Round targeted number is " + randomRoundNumber);
+    io.emit("launch_round", randomRoundNumber); // send to every player the 
+  });
 
 
-
-  // socket.emit("broadcast", `Il y a ${activeUsers.length} joueurs connectés`);
 
   socket.on("disconnect", () => {
     console.log(`${socket.id} (${activeUsers[socket.id].username}) disconnect from the page`);
@@ -57,9 +60,12 @@ io.on("connection", (socket) => {
 });
 
 
-// io.emit("bor", )
 
 
+
+
+// ---------------------------------------------------
+// ---------------------------------------------------
 const port = 4000;
 httpServer.listen(port, () => {
     console.log(`WebSocket server is running on port ${port}`);

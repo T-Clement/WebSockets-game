@@ -5,36 +5,34 @@ import { socket } from '../socket'
 function GameRoom({ username, setUsername }) {
   const [usersActive, setUsersActive] = useState([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
+  const [roundRandomNumber, setRoundRandomNumber] = useState(null);
+
   useEffect(() => {
     
     socket.connect();
     socket.on("connect", () => {
-      console.log("Connected to the WebSocket server with id : " + socket.id);
+      // console.log("Connected to the WebSocket server with id : " + socket.id);
     });
     
     socket.emit("bonjour", username);
     
 
-    socket.on("broadcast", (data) => {
-      console.log(data);
-    });
-
-    // socket.on("hello", (data) => {
-    //   console.log("Message from server : ", data)
-    // });
-
-    // socket.on("hello", (data) => {
-    //   console.log("Message from server:", data);
-    // });
-
-
+    
     socket.on("getActiveUsers", (users) => {
       setUsersActive(users);
 
-      // console.log("Active users ", usersActive); // answer empty array ??
     });
 
+    socket.on("launch_round", (data) => {
+      setRoundRandomNumber(data);
+      setIsGameStarted(true);
+      // console.log("Le nombre cible pour ce round est : " + data);
+    })
 
+    
+
+
+    // reconnect user if connection lost and user still in page
     socket.on("connect_error", () => {
       // socket.emit("connection_error", socket.id);
       // socket.disconnect();
@@ -55,15 +53,17 @@ function GameRoom({ username, setUsername }) {
   }, [username]); // end of useEffect
 
   const handleClick = () => {
-    console.log("C'est cliqué");
-    setIsGameStarted(true);
+    // console.log(`${username} a lancé la partie`);
+    // launchGame(username);
+    socket.emit("launch_game", username); // send id of user instead of user name
+    // console.log("Après l'envoi de la partie");
   };
 
 
 
-  console.log(usersActive);
-  console.log(Object.values(usersActive));
-  console.log(Object.values(usersActive).length);
+  // console.log(usersActive);
+  // console.log(Object.values(usersActive));
+  // console.log(Object.values(usersActive).length);
 
    return !isGameStarted ? (
     <div>
@@ -78,7 +78,7 @@ function GameRoom({ username, setUsername }) {
 
         <button 
           onClick = {handleClick} 
-         disabled = {Object.values(usersActive).length < 2}
+          disabled = {Object.values(usersActive).length < 2}
 
         >
           Lancer la partie
@@ -89,6 +89,7 @@ function GameRoom({ username, setUsername }) {
   :  (
     <>
       <h1>Lancement de la partie</h1>
+      <p>Targeted Number : { roundRandomNumber }</p>
     </>
   )
 }
