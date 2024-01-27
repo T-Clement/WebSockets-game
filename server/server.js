@@ -1,5 +1,6 @@
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { uuid } = require("uuid");
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -8,12 +9,15 @@ const io = new Server(httpServer, {
     } 
 });
 
+// TODOS :
+// choose a room to play to display 
+// only users related to this room
 
-const activeUsers = [];
+const activeUsers = {};
 
 
 io.on("connection", (socket) => {
-  console.log("New user connected");
+  console.log("New user connected to websocket");
   
   socket.on("bonjour", (username) => {
     console.log(`${username} dit bonjour au serveur WebScoket`);
@@ -22,23 +26,31 @@ io.on("connection", (socket) => {
 
 
     // store in socket the username
-    socket.username = username;
+    // socket.username = username;
 
     // store user in active users list
-    activeUsers[socket.id] = username;
+    // socket
+    activeUsers[socket.id] = { 
+      id : socket.id, 
+      username: username
+    }; // socket.id return a unique identifier synch between client and server side
 
-    io.emit("getActiveUsers", Object.values(activeUsers));
+    console.log(activeUsers);
+    io.emit("getActiveUsers", activeUsers);
 
   })
 
 
 
-  socket.emit("broadcast", "Oui ça crie pour tout le monde");
 
-  socket.on("disconnection", () => {
-    console.log(`${socket.username} disconnect from the page`);
+  // socket.emit("broadcast", `Il y a ${activeUsers.length} joueurs connectés`);
+
+  socket.on("disconnect", () => {
+    console.log(`${socket.id} (${activeUsers[socket.id].username}) disconnect from the page`);
     delete activeUsers[socket.id];
-    io.emit("getActiveUsers", Object.values(activeUsers));
+    console.log("Nouvelle liste des utilisateurs connectés : ");
+    console.log(activeUsers);
+    io.emit("getActiveUsers", activeUsers);
   })
 
 });

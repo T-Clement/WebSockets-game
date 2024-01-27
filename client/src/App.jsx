@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { Login } from './components/Login';
-import Waitingscreen from './components/Waitingscreen';
+import GameRoom from './components/GameRoom';
 
 function App() {
   const [username, setUsername] = useState(null);
@@ -10,7 +10,7 @@ function App() {
 
 
   return username ? (
-    <Waitingscreen username = { username }/>
+    <GameRoom username = { username } setUsername = { setUsername } />
   ) 
   : 
   (
