@@ -10,14 +10,19 @@ const chronoStyle = {
 function Timer({ sendUserNumberToServer, userId }) {
     // STATES
     const [chronoValue, setChronoValue] = useState(20);
-    const [intervalId, setIntervalId] = useState(null);
+    
+    // needed to target the interval when we want to stop
+        // the countdown when the user clicked
+    const [intervalId, setIntervalId] = useState(null); 
 
     useEffect(() => {
         const id = setInterval(() => {
+            // update value of chrono
             setChronoValue(prev => prev - 0.1);
         }, 100);
         setIntervalId(id);
 
+        // cleanup function
         return () => clearInterval(id);
     }, []);
     
@@ -25,10 +30,9 @@ function Timer({ sendUserNumberToServer, userId }) {
     
     const handleStop = () => {
         clearInterval(intervalId);
+        // send user number to websocket server
         sendUserNumberToServer( { chronoValue : chronoValue, userId : userId });
     }
-
-    
 
       // VIEW
   return (

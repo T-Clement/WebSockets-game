@@ -14,9 +14,11 @@ const io = new Server(httpServer, {
 // choose a room to play to display 
   // only users related to this room
 // change the socket.id system to something send by client ?
+// update activeUsers and scores Objects to Arrays ?
 
 const activeUsers = {};
 const scores = {};
+let randomRoundNumber;
 
 io.on("connection", (socket) => {
   // log in server consoles
@@ -48,7 +50,7 @@ io.on("connection", (socket) => {
     console.log(`${username} launched the game`);
 
     // get a server side generated random number
-    let randomRoundNumber = randomIntFromInterval(0, 15);
+    randomRoundNumber = randomIntFromInterval(0, 15);
     console.log("Round targeted number is " + randomRoundNumber);
 
     // broadcast to all users the random number and launch round
@@ -56,14 +58,40 @@ io.on("connection", (socket) => {
   });
 
 
-
+  // handle receiving of users input and determine winner
   socket.on("sendUserNumberToServer", (data) => {
     console.log(activeUsers[data["userId"]] + " : " + data["chronoValue"]);
     scores[data["userId"]] = data["chronoValue"];
     console.log(scores);
 
     if(Object.values(scores). length === Object.values(activeUsers).length) {
-      
+      console.log("Calcul des scores en cours");
+      console.log("Valeur cible du round : " + randomRoundNumber);
+      let entries = Object.entries(scores);
+      let sorted = entries.sort((a, b) => {
+        // comparison with absolute values to handle negative numbers
+        const distanceA = Math.abs(a[1] - randomRoundNumber);
+        const distanceB = Math.abs(b[1] - randomRoundNumber);
+
+        // sort by nearest user
+        return distanceA - distanceB;
+    });
+
+    console.log(sorted);
+
+    io.emit("ranking", sorted);
+      // !!! ITS HERE !!!
+      // !!! ITS HERE !!!
+      // !!! ITS HERE !!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
+      // !!! ITS HERE !!!
+      // !!! ITS HERE !!!
+      // !!! ITS HERE !!!
     }
   });
 
@@ -75,9 +103,8 @@ io.on("connection", (socket) => {
     // delete disconnected user by targeted him by its id
     delete activeUsers[socket.id];
     console.log("Nouvelle liste des utilisateurs connectés : ");
-    
+        console.log(activeUsers);
 
-    console.log(activeUsers);
     // send updated activeUsers object to client
     io.emit("getActiveUsers", activeUsers);
   })
