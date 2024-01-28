@@ -12,8 +12,8 @@ function GameRoom({ username, setUsername }) {
   const [usersActive, setUsersActive] = useState([]);
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [roundRandomNumber, setRoundRandomNumber] = useState(null);
-  const [scores, setScores] = useState(null);
-
+  // const [scores, setScores] = useState(null);
+  const [ranking, setRanking] = useState(null);
 
   useEffect(() => {
     
@@ -42,7 +42,10 @@ function GameRoom({ username, setUsername }) {
     })
 
     
-
+    socket.on("ranking", (serverRanking) => {
+      // console.log(ranking);
+      setRanking(serverRanking)
+    })
 
     // reconnect user if connection lost and user still in page
     socket.on("connect_error", () => {
@@ -78,11 +81,7 @@ function GameRoom({ username, setUsername }) {
   };
 
   
-
-
-  // console.log(usersActive);
-  // console.log(Object.values(usersActive));
-  // console.log(Object.values(usersActive).length);
+  
 
    return !isGameStarted ? (
     <div>
@@ -96,8 +95,8 @@ function GameRoom({ username, setUsername }) {
         </ul>
 
         <button 
-          onClick = {handleClick} 
-          disabled = {Object.values(usersActive).length < 2}
+          onClick = { handleClick } 
+          disabled = { Object.values(usersActive).length < 2 || isGameStarted } // not allow to start game if game is started for other users
 
         >
           Lancer la partie
@@ -113,7 +112,7 @@ function GameRoom({ username, setUsername }) {
 
       <Timer sendUserNumberToServer = { sendUserNumberToServer } userId = { socket.id } />
       
-      {scores ? <TableScore scores = { scores } /> : "" }
+      {ranking ? <TableScore ranking = { ranking } setIsGameStarted = { setIsGameStarted } /> : "" }
 
     </>
   )

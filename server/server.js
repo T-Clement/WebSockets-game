@@ -78,6 +78,8 @@ io.on("connection", (socket) => {
       io.emit("ranking", sorted);
       
     }
+    // delete sorted variable
+    delete sorted;
   });
 
 
