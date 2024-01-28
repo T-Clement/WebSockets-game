@@ -1,7 +1,7 @@
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const { uuid } = require("uuid");
-const { randomIntFromInterval } = require('./utilities');
+const { randomIntFromInterval, sortingInputs } = require('./utilities');
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -68,30 +68,15 @@ io.on("connection", (socket) => {
       console.log("Calcul des scores en cours");
       console.log("Valeur cible du round : " + randomRoundNumber);
       let entries = Object.entries(scores);
-      let sorted = entries.sort((a, b) => {
-        // comparison with absolute values to handle negative numbers
-        const distanceA = Math.abs(a[1] - randomRoundNumber);
-        const distanceB = Math.abs(b[1] - randomRoundNumber);
+      
+      // call to utilites function who sort in ascending order scores, from the nearest to the furthest of the targeted number
+      let sorted = sortingInputs(entries, randomRoundNumber);
 
-        // sort by nearest user
-        return distanceA - distanceB;
-    });
+      console.log(sorted);
 
-    console.log(sorted);
-
-    io.emit("ranking", sorted);
-      // !!! ITS HERE !!!
-      // !!! ITS HERE !!!
-      // !!! ITS HERE !!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! IT'S TIME FOR THE SORTING ALGORITHM !!!!!
-      // !!! ITS HERE !!!
-      // !!! ITS HERE !!!
-      // !!! ITS HERE !!!
+      // send round ranking to client
+      io.emit("ranking", sorted);
+      
     }
   });
 
