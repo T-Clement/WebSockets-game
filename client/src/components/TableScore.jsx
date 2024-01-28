@@ -1,6 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 function TableScore({ ranking, setIsGameStarted }) {
+  const [timer, setTimer] = useState(8);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer(prev => prev - 1);
+    }, 1000);
+
+    if(timer === 0) {
+      setIsGameStarted(false);
+      // reset all values in server who are not related to TableScore ? 
+
+    }
+    return () => {
+      clearInterval(interval);
+    }
+  }, [timer]);
+
 
   console.log(ranking);
   return (
@@ -12,7 +29,7 @@ function TableScore({ ranking, setIsGameStarted }) {
           ))}
         </ol>
 
-        <button onClick={ () => setIsGameStarted(false) }>Go back to Waiting Room</button>
+        <button disabled onClick={ () => setIsGameStarted(false) }>Redirection to Waiting Room : {timer} </button>
 
     </div>
   )
